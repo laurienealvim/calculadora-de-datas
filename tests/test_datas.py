@@ -18,7 +18,7 @@ from datetime import date, datetime
 
 import pytest
 
-from calculadora_datas import calcular_idade, dias_restantes
+from calculadora_datas import calcular_idade, dias_decorridos, dias_restantes
 
 
 class TestCalcularIdade:
@@ -112,3 +112,49 @@ class TestDiasRestantes:
     def test_rejeita_tipos_invalidos(self, valor_invalido):
         with pytest.raises(TypeError):
             dias_restantes(valor_invalido, date(2026, 12, 24))
+
+
+class TestDiasDecorridos:
+    """Testes da função ``dias_decorridos``."""
+
+    @pytest.mark.parametrize(
+        ("data_passada", "referencia", "dias_esperados"),
+        [
+            pytest.param(date(2026, 9, 7), date(2026, 9, 8), 1, id="dia-anterior"),
+            pytest.param(date(2026, 9, 1), date(2026, 9, 8), 7, id="uma-semana"),
+            pytest.param(date(2026, 10, 31), date(2026, 11, 1), 1, id="virada-de-mes"),
+            pytest.param(date(2025, 12, 31), date(2026, 1, 1), 1, id="virada-de-ano"),
+            pytest.param(date(2025, 11, 14), date(2026, 11, 14), 365, id="um-ano-comum"),
+        ],
+    )
+    def test_calcula_os_dias_decorridos(self, data_passada, referencia, dias_esperados):
+        assert dias_decorridos(data_passada, referencia) == dias_esperados
+
+    def test_a_propria_data_resulta_em_zero_dias(self):
+        assert dias_decorridos(date(2026, 9, 7), date(2026, 9, 7)) == 0
+
+    def test_considera_o_dia_extra_do_ano_bissexto(self):
+        assert dias_decorridos(date(2028, 1, 1), date(2029, 1, 1)) == 366
+
+    def test_usa_a_data_atual_quando_a_referencia_e_omitida(self):
+        assert dias_decorridos(date.today()) == 0
+
+    def test_aceita_datetime_e_ignora_o_horario(self):
+        assert dias_decorridos(datetime(2026, 9, 7, 23, 10), date(2026, 9, 8)) == 1
+
+    def test_e_simetrica_em_relacao_a_dias_restantes(self):
+        """A mesma distância deve ser medida nos dois sentidos."""
+        origem, destino = date(2026, 1, 10), date(2026, 3, 25)
+        assert dias_decorridos(origem, destino) == dias_restantes(destino, origem)
+
+    def test_rejeita_data_ainda_nao_ocorrida(self):
+        with pytest.raises(ValueError, match="ainda não ocorreu"):
+            dias_decorridos(date(2026, 9, 9), date(2026, 9, 8))
+
+    @pytest.mark.parametrize(
+        "valor_invalido",
+        [pytest.param("07/09/2026", id="texto"), pytest.param(20260907, id="inteiro"), pytest.param(None, id="nulo")],
+    )
+    def test_rejeita_tipos_invalidos(self, valor_invalido):
+        with pytest.raises(TypeError):
+            dias_decorridos(valor_invalido, date(2026, 9, 8))
