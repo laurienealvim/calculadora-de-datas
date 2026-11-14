@@ -23,8 +23,9 @@ o trabalho em ramificações (*branches*) e a fusão com preservação de histó
 |---|---|
 | `calcular_idade(data_nascimento, data_referencia=None)` | Devolve a idade da pessoa em anos completos. |
 | `dias_restantes(data_futura, data_referencia=None)` | Devolve quantos dias faltam até uma data futura. |
+| `dias_decorridos(data_passada, data_referencia=None)` | Devolve quantos dias já se passaram desde uma data no passado. |
 
-Em ambas as funções, quando `data_referencia` é omitida utiliza-se a data atual
+Em todas as funções, quando `data_referencia` é omitida utiliza-se a data atual
 do sistema. Entradas inválidas levantam `TypeError` (tipo incorreto) ou
 `ValueError` (data incoerente com a operação solicitada).
 
@@ -57,10 +58,11 @@ Exemplo de uso das funções:
 
 ```python
 from datetime import date
-from calculadora_datas import calcular_idade, dias_restantes
+from calculadora_datas import calcular_idade, dias_decorridos, dias_restantes
 
 calcular_idade(date(2000, 5, 20), date(2026, 5, 20))   # 26
 dias_restantes(date(2026, 12, 25), date(2026, 12, 18)) # 7
+dias_decorridos(date(2026, 9, 1), date(2026, 9, 8))    # 7
 ```
 
 ## 5. Testes

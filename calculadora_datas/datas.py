@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-__all__ = ["calcular_idade", "dias_restantes"]
+__all__ = ["calcular_idade", "dias_restantes", "dias_decorridos"]
 
 
 def _normalizar_data(valor: object, nome_parametro: str) -> date:
@@ -140,3 +140,44 @@ def dias_restantes(data_futura: date, data_referencia: date | None = None) -> in
         )
 
     return (futura - referencia).days
+
+
+def dias_decorridos(data_passada: date, data_referencia: date | None = None) -> int:
+    """Calcula quantos dias já se passaram desde uma data no passado.
+
+    A contagem é exclusiva do dia de origem e inclusiva do dia de
+    referência: se a data passada for o dia anterior ao da referência,
+    o resultado é 1. Quando a data passada coincide com a data de
+    referência, o resultado é 0.
+
+    Args:
+        data_passada: Data a partir da qual se deseja contar.
+        data_referencia: Data até a qual a contagem é feita. Quando
+            omitida, utiliza-se a data atual do sistema.
+
+    Returns:
+        A quantidade de dias decorridos desde a data informada.
+
+    Raises:
+        TypeError: Se algum argumento não for uma data.
+        ValueError: Se a data informada ainda não tiver ocorrido em
+            relação à data de referência.
+
+    Examples:
+        >>> from datetime import date
+        >>> dias_decorridos(date(2026, 9, 7), date(2026, 9, 8))
+        1
+        >>> dias_decorridos(date(2026, 9, 7), date(2026, 9, 7))
+        0
+    """
+    passada = _normalizar_data(data_passada, "data_passada")
+    referencia = _resolver_referencia(data_referencia)
+
+    if passada > referencia:
+        raise ValueError(
+            "A data informada ainda não ocorreu em relação à data de referência: "
+            f"data_passada={passada.isoformat()}, "
+            f"referência={referencia.isoformat()}."
+        )
+
+    return (referencia - passada).days
