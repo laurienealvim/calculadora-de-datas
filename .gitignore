@@ -1,0 +1,18 @@
+# Bytecode e caches do Python
+__pycache__/
+*.py[cod]
+
+# Caches de ferramentas
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Arquivos de editor e de sistema
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
